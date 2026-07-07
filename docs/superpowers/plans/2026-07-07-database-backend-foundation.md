@@ -67,7 +67,7 @@ database/generated/
 
 ```
 # Postgres connection string used by database/ and backend/
-DATABASE_URL=postgresql://test:test@localhost:5433/rangewebsite_test
+DATABASE_URL=postgresql://test:test@localhost:5434/rangewebsite_test
 
 # Backend
 PORT=4000
@@ -255,7 +255,7 @@ model AdminUser {
 - [ ] **Step 5: Create `database/.env` (local dev/test only — do not commit)**
 
 ```
-DATABASE_URL="postgresql://test:test@localhost:5433/rangewebsite_test"
+DATABASE_URL="postgresql://test:test@localhost:5434/rangewebsite_test"
 ADMIN_BOOTSTRAP_EMAIL="admin@cyberrange.test"
 ADMIN_BOOTSTRAP_PASSWORD="ChangeMe123!"
 ```
@@ -266,7 +266,7 @@ Run:
 ```bash
 docker run --rm -d --name rangewebsite-test-db \
   -e POSTGRES_USER=test -e POSTGRES_PASSWORD=test -e POSTGRES_DB=rangewebsite_test \
-  -p 5433:5432 postgres:16-alpine
+  -p 5434:5432 postgres:16-alpine
 until docker exec rangewebsite-test-db pg_isready -U test > /dev/null 2>&1; do sleep 1; done
 ```
 Expected: container starts, loop exits once Postgres reports ready.
@@ -741,7 +741,7 @@ Run:
 if ! docker inspect rangewebsite-test-db > /dev/null 2>&1; then
   docker run --rm -d --name rangewebsite-test-db \
     -e POSTGRES_USER=test -e POSTGRES_PASSWORD=test -e POSTGRES_DB=rangewebsite_test \
-    -p 5433:5432 postgres:16-alpine
+    -p 5434:5432 postgres:16-alpine
   until docker exec rangewebsite-test-db pg_isready -U test > /dev/null 2>&1; do sleep 1; done
   npm run migrate:deploy --workspace=database
   npm run seed --workspace=database
@@ -752,7 +752,7 @@ Expected: exits immediately if the container already exists; otherwise creates, 
 - [ ] **Step 2: Append `DATABASE_URL` to `backend/.env`**
 
 ```
-DATABASE_URL="postgresql://test:test@localhost:5433/rangewebsite_test"
+DATABASE_URL="postgresql://test:test@localhost:5434/rangewebsite_test"
 ```
 
 - [ ] **Step 3: Create `backend/src/db.ts`**
