@@ -49,4 +49,39 @@ describe('/api/admin/courses', () => {
       .set('Authorization', `Bearer ${token}`);
     expect(deleteResponse.status).toBe(204);
   });
+
+  it('returns 404 when updating a nonexistent course', async () => {
+    const token = await getAdminToken();
+    const response = await request(app)
+      .put('/api/admin/courses/00000000-0000-0000-0000-000000000000')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Does Not Exist' });
+    expect(response.status).toBe(404);
+  });
+
+  it('returns 409 when creating a course with a duplicate slug', async () => {
+    const token = await getAdminToken();
+    const payload = {
+      slug: 'duplicate-slug-test',
+      name: 'First',
+      shortDescription: 'First course.',
+      description: 'Full description.',
+      targetAudience: 'Testers.',
+      durationLabel: '1 day',
+      curriculumHighlights: ['Module 1'],
+      displayOrder: 98,
+    };
+
+    const firstResponse = await request(app)
+      .post('/api/admin/courses')
+      .set('Authorization', `Bearer ${token}`)
+      .send(payload);
+    expect(firstResponse.status).toBe(201);
+
+    const secondResponse = await request(app)
+      .post('/api/admin/courses')
+      .set('Authorization', `Bearer ${token}`)
+      .send(payload);
+    expect(secondResponse.status).toBe(409);
+  });
 });

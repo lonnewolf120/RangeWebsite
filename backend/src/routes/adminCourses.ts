@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
+import { Prisma } from '@rangewebsite/database';
 import { prisma } from '../db.js';
 
 export const adminCoursesRouter = Router();
@@ -30,8 +31,16 @@ adminCoursesRouter.post('/', async (req, res) => {
     return;
   }
 
-  const course = await prisma.course.create({ data: parsed.data });
-  res.status(201).json(course);
+  try {
+    const course = await prisma.course.create({ data: parsed.data });
+    res.status(201).json(course);
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      res.status(409).json({ error: 'A course with this slug already exists' });
+      return;
+    }
+    throw error;
+  }
 });
 
 adminCoursesRouter.put('/:id', async (req, res) => {
@@ -45,8 +54,18 @@ adminCoursesRouter.put('/:id', async (req, res) => {
   try {
     const course = await prisma.course.update({ where: { id: req.params.id }, data: parsed.data });
     res.json(course);
-  } catch {
-    res.status(404).json({ error: 'Course not found' });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2025') {
+        res.status(404).json({ error: 'Course not found' });
+        return;
+      }
+      if (error.code === 'P2002') {
+        res.status(409).json({ error: 'A course with this slug already exists' });
+        return;
+      }
+    }
+    throw error;
   }
 });
 
@@ -54,7 +73,11 @@ adminCoursesRouter.delete('/:id', async (req, res) => {
   try {
     await prisma.course.delete({ where: { id: req.params.id } });
     res.status(204).send();
-  } catch {
-    res.status(404).json({ error: 'Course not found' });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      res.status(404).json({ error: 'Course not found' });
+      return;
+    }
+    throw error;
   }
 });
