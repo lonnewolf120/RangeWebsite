@@ -3,6 +3,8 @@ import cors from 'cors';
 import { coursesRouter } from './routes/courses.js';
 import { enrollmentsRouter } from './routes/enrollments.js';
 import { adminAuthRouter } from './routes/adminAuth.js';
+import { adminCoursesRouter } from './routes/adminCourses.js';
+import { requireAdminAuth } from './auth.js';
 
 export function createApp(): Express {
   const app = express();
@@ -17,6 +19,7 @@ export function createApp(): Express {
   app.use('/api/courses', coursesRouter);
   app.use('/api/enrollments', enrollmentsRouter);
   app.use('/api/admin', adminAuthRouter);
+  app.use('/api/admin/courses', requireAdminAuth, adminCoursesRouter);
 
   return app;
 }
