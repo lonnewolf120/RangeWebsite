@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Course {
+  id                   String       @id @default(uuid())
+  slug                 String       @unique
+  name                 String
+  shortDescription     String
+  description          String
+  targetAudience       String
+  durationLabel        String
+  curriculumHighlights String[]
+  fee                  String?
+  featuredInHero       Boolean      @default(false)
+  displayOrder         Int
+  enrollments          Enrollment[]
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+}
+
+model Enrollment {
+  id        String           @id @default(uuid())
+  course    Course?          @relation(fields: [courseId], references: [id])
+  courseId  String?
+  name      String
+  email     String
+  phone     String?
+  message   String?
+  status    EnrollmentStatus @default(NEW)
+  createdAt DateTime         @default(now())
+}
+
+enum EnrollmentStatus {
+  NEW
+  CONTACTED
+  ENROLLED
+  REJECTED
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
