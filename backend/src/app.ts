@@ -1,4 +1,4 @@
-import express, { type Express } from 'express';
+import express, { type Express, type Request, type Response, type NextFunction } from 'express';
 import cors from 'cors';
 import { coursesRouter } from './routes/courses.js';
 import { enrollmentsRouter } from './routes/enrollments.js';
@@ -22,6 +22,15 @@ export function createApp(): Express {
   app.use('/api/admin', adminAuthRouter);
   app.use('/api/admin/courses', requireAdminAuth, adminCoursesRouter);
   app.use('/api/admin/enrollments', requireAdminAuth, adminEnrollmentsRouter);
+
+  app.use((_req: Request, res: Response) => {
+    res.status(404).json({ error: 'Not found' });
+  });
+
+  app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  });
 
   return app;
 }
