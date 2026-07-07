@@ -1,1 +1,9 @@
 .worktrees/
+node_modules/
+.env
+.env.*.local
+dist/
+build/
+.next/
+database/generated/
+*.log
