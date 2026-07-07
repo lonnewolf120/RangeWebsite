@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterAll } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../src/app.js';
+import { prisma } from '../src/db.js';
 
 const app = createApp();
 
@@ -40,5 +41,9 @@ describe('/api/admin/enrollments', () => {
       .send({ status: 'CONTACTED' });
     expect(patchResponse.status).toBe(200);
     expect(patchResponse.body.status).toBe('CONTACTED');
+  });
+
+  afterAll(async () => {
+    await prisma.enrollment.deleteMany({ where: { email: 'status-test@example.com' } });
   });
 });

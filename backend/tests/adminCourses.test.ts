@@ -1,8 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterAll } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../src/app.js';
 
 const app = createApp();
+let duplicateSlugCourseId: string | undefined;
 
 async function getAdminToken(): Promise<string> {
   const response = await request(app).post('/api/admin/login').send({
@@ -77,11 +78,21 @@ describe('/api/admin/courses', () => {
       .set('Authorization', `Bearer ${token}`)
       .send(payload);
     expect(firstResponse.status).toBe(201);
+    duplicateSlugCourseId = firstResponse.body.id as string;
 
     const secondResponse = await request(app)
       .post('/api/admin/courses')
       .set('Authorization', `Bearer ${token}`)
       .send(payload);
     expect(secondResponse.status).toBe(409);
+  });
+
+  afterAll(async () => {
+    if (duplicateSlugCourseId) {
+      const token = await getAdminToken();
+      await request(app)
+        .delete(`/api/admin/courses/${duplicateSlugCourseId}`)
+        .set('Authorization', `Bearer ${token}`);
+    }
   });
 });
