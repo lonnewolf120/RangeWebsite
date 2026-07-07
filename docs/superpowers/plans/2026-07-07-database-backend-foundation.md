@@ -55,7 +55,7 @@
 ```
 node_modules/
 .env
-.env.*.local
+.env*.local
 dist/
 build/
 .next/
