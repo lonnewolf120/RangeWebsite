@@ -4,6 +4,7 @@ import { coursesRouter } from './routes/courses.js';
 import { enrollmentsRouter } from './routes/enrollments.js';
 import { adminAuthRouter } from './routes/adminAuth.js';
 import { adminCoursesRouter } from './routes/adminCourses.js';
+import { adminEnrollmentsRouter } from './routes/adminEnrollments.js';
 import { requireAdminAuth } from './auth.js';
 
 export function createApp(): Express {
@@ -20,6 +21,7 @@ export function createApp(): Express {
   app.use('/api/enrollments', enrollmentsRouter);
   app.use('/api/admin', adminAuthRouter);
   app.use('/api/admin/courses', requireAdminAuth, adminCoursesRouter);
+  app.use('/api/admin/enrollments', requireAdminAuth, adminEnrollmentsRouter);
 
   return app;
 }
