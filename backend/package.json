@@ -1,5 +1,33 @@
 {
   "name": "@rangewebsite/backend",
   "version": "0.1.0",
-  "private": true
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "express": "^5.0.0",
+    "cors": "^2.8.5",
+    "zod": "^3.24.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.4.0",
+    "@rangewebsite/database": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsx": "^4.19.0",
+    "vitest": "^2.1.0",
+    "supertest": "^7.0.0",
+    "@types/express": "^5.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/supertest": "^6.0.2",
+    "@types/node": "^22.10.0"
+  }
 }
