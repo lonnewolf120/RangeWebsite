@@ -11,6 +11,8 @@ const loginSchema = z.object({
   password: z.string().min(1),
 });
 
+const DUMMY_HASH = '$2a$12$CwTycUXWue0Thq9StjUM0uJ8Bxq0FvGVGVsAT0/vObDkQ9V.WvVFC';
+
 adminAuthRouter.post('/login', async (req, res) => {
   const parsed = loginSchema.safeParse(req.body);
 
@@ -20,15 +22,9 @@ adminAuthRouter.post('/login', async (req, res) => {
   }
 
   const admin = await prisma.adminUser.findUnique({ where: { email: parsed.data.email } });
+  const passwordMatches = await bcrypt.compare(parsed.data.password, admin?.passwordHash ?? DUMMY_HASH);
 
-  if (!admin) {
-    res.status(401).json({ error: 'Invalid credentials' });
-    return;
-  }
-
-  const passwordMatches = await bcrypt.compare(parsed.data.password, admin.passwordHash);
-
-  if (!passwordMatches) {
+  if (!admin || !passwordMatches) {
     res.status(401).json({ error: 'Invalid credentials' });
     return;
   }
