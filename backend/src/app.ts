@@ -1,6 +1,7 @@
 import express, { type Express } from 'express';
 import cors from 'cors';
 import { coursesRouter } from './routes/courses.js';
+import { enrollmentsRouter } from './routes/enrollments.js';
 
 export function createApp(): Express {
   const app = express();
@@ -13,6 +14,7 @@ export function createApp(): Express {
   });
 
   app.use('/api/courses', coursesRouter);
+  app.use('/api/enrollments', enrollmentsRouter);
 
   return app;
 }
