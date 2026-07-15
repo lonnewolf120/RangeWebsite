@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #e4e4e7;
 }
 
 @theme inline {
@@ -12,15 +12,137 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: rgba(16, 185, 129, 0.35);
+  color: #f4f4f5;
+}
+
+/* ------------------------------------------------------------------ */
+/* Shared aesthetic utilities                                          */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Gradient hairline: replaces flat 1px section borders with a line that
+ * glows faintly emerald toward its ends and fades out at the edges —
+ * the seams between sections feel lit instead of drawn.
+ */
+.hairline-t {
+  position: relative;
+}
+.hairline-t::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(16, 185, 129, 0.28) 18%,
+    rgba(82, 82, 91, 0.45) 50%,
+    rgba(16, 185, 129, 0.28) 82%,
+    transparent
+  );
+}
+
+/*
+ * Film grain overlay: a static SVG noise tile at very low opacity ties
+ * the DOM sections to the cinematic 3D hero. Fixed + pointer-events
+ * none, so it costs nothing and blocks nothing.
+ */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+}
+
+/* Emerald glow for primary CTAs — reads as light, not a box-shadow */
+.btn-glow {
+  box-shadow:
+    0 0 24px -6px rgba(16, 185, 129, 0.5),
+    0 0 64px -12px rgba(16, 185, 129, 0.25);
+}
+.btn-glow:hover {
+  box-shadow:
+    0 0 32px -6px rgba(16, 185, 129, 0.7),
+    0 0 80px -10px rgba(16, 185, 129, 0.35);
+}
+
+/*
+ * Everything stays scrollable, but no scrollbar is ever drawn.
+ * This also hides the internal drei <ScrollControls> scroller in the hero,
+ * which otherwise showed a second scrollbar next to the page one.
+ */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Scroll-reveal (driven by IntersectionObserver in <Reveal>)          */
+/* ------------------------------------------------------------------ */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Infinite horizontal logo marquee                                    */
+/* ------------------------------------------------------------------ */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* The track holds two copies of the logo list, so -50% loops seamlessly */
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 36s linear infinite;
+  will-change: transform;
+}
+.marquee-group:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* ------------------------------------------------------------------ */
+/* Reduced motion: no reveals, no marquee movement                     */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .animate-marquee {
+    animation: none;
+  }
 }
