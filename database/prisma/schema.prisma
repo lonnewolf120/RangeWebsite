@@ -8,40 +8,95 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Course {
-  id                   String       @id @default(uuid())
-  slug                 String       @unique
-  name                 String
-  shortDescription     String
-  description          String
-  targetAudience       String
-  durationLabel        String
-  curriculumHighlights String[]
-  fee                  String?
-  featuredInHero       Boolean      @default(false)
-  displayOrder         Int
-  enrollments          Enrollment[]
-  createdAt            DateTime     @default(now())
-  updatedAt            DateTime     @updatedAt
+enum CourseStatus {
+  UPCOMING
+  OFFERED
+  COMPLETED
 }
 
-model Enrollment {
-  id        String           @id @default(uuid())
-  course    Course?          @relation(fields: [courseId], references: [id])
-  courseId  String?
-  name      String
-  email     String
-  phone     String?
-  message   String?
-  status    EnrollmentStatus @default(NEW)
-  createdAt DateTime         @default(now())
-}
-
-enum EnrollmentStatus {
+enum RegistrationStatus {
   NEW
   CONTACTED
-  ENROLLED
+  CONFIRMED
   REJECTED
+}
+
+// Course mirrors the frontend `Course` type in src/lib/courses/types.ts
+// field-for-field. Sub-structures with no independent query need (overview
+// rows, schedule rows, training team, certificate) are stored as Json
+// rather than normalized tables — see the CMS design spec for rationale.
+model Course {
+  id               String       @id @default(uuid())
+  slug             String       @unique
+  title            String
+  shortDescription String
+  status           CourseStatus @default(OFFERED)
+  featured         Boolean      @default(false)
+  displayOrder     Int          @default(0)
+
+  durationHours Int?
+  durationText  String?
+  scheduleText  String?
+  startDateText String?
+  periodText    String?
+  feeText       String?
+  level         String?
+
+  overview          Json? // OverviewRow[]  { label, value }
+  about             String[] @default([])
+  takeaways         String[] @default([])
+  audience          String[] @default([])
+  prerequisites     String[] @default([])
+  courseSchedule    Json? // ScheduleRow[]  { week, day, time, coverage }
+  scheduleNotes     String[] @default([])
+  trainingTeam      Json? // TeamRole[]     { role, qty, responsibility }
+  trainingTeamNotes String[] @default([])
+  certificate       Json? // CertificateInfo { name, description, criteria[] }
+  confirmationNotes String[] @default([])
+
+  instructors   CourseInstructor[]
+  registrations CourseRegistration[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StaffMember {
+  id          String             @id @default(uuid())
+  name        String
+  title       String
+  credentials String?
+  bio         String?
+  photoUrl    String?
+  courses     CourseInstructor[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+// Join table so instructor order per-course is preserved.
+model CourseInstructor {
+  course       Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId     String
+  staff        StaffMember @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  staffId      String
+  displayOrder Int         @default(0)
+
+  @@id([courseId, staffId])
+}
+
+model CourseRegistration {
+  id             String             @id @default(uuid())
+  course         Course?            @relation(fields: [courseId], references: [id])
+  courseId       String?
+  name           String
+  email          String
+  phone          String?
+  organization   String?
+  designation    String?
+  preferredBatch String?
+  message        String?
+  status         RegistrationStatus @default(NEW)
+  createdAt      DateTime           @default(now())
 }
 
 model AdminUser {

@@ -44,6 +44,6 @@ describe('/api/admin/enrollments', () => {
   });
 
   afterAll(async () => {
-    await prisma.enrollment.deleteMany({ where: { email: 'status-test@example.com' } });
+    await prisma.courseRegistration.deleteMany({ where: { email: 'status-test@example.com' } });
   });
 });

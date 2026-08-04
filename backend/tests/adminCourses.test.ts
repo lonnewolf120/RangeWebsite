@@ -27,23 +27,21 @@ describe('/api/admin/courses', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({
         slug: 'test-course',
-        name: 'Test Course',
+        title: 'Test Course',
         shortDescription: 'A test course.',
-        description: 'Full description.',
-        targetAudience: 'Testers.',
-        durationLabel: '1 day',
-        curriculumHighlights: ['Module 1'],
+        status: 'OFFERED',
         displayOrder: 99,
       });
     expect(createResponse.status).toBe(201);
+    expect(createResponse.body.instructors).toEqual([]);
     const courseId = createResponse.body.id as string;
 
     const updateResponse = await request(app)
       .put(`/api/admin/courses/${courseId}`)
       .set('Authorization', `Bearer ${token}`)
-      .send({ name: 'Updated Test Course' });
+      .send({ title: 'Updated Test Course' });
     expect(updateResponse.status).toBe(200);
-    expect(updateResponse.body.name).toBe('Updated Test Course');
+    expect(updateResponse.body.title).toBe('Updated Test Course');
 
     const deleteResponse = await request(app)
       .delete(`/api/admin/courses/${courseId}`)
@@ -56,7 +54,7 @@ describe('/api/admin/courses', () => {
     const response = await request(app)
       .put('/api/admin/courses/00000000-0000-0000-0000-000000000000')
       .set('Authorization', `Bearer ${token}`)
-      .send({ name: 'Does Not Exist' });
+      .send({ title: 'Does Not Exist' });
     expect(response.status).toBe(404);
   });
 
@@ -64,12 +62,9 @@ describe('/api/admin/courses', () => {
     const token = await getAdminToken();
     const payload = {
       slug: 'duplicate-slug-test',
-      name: 'First',
+      title: 'First',
       shortDescription: 'First course.',
-      description: 'Full description.',
-      targetAudience: 'Testers.',
-      durationLabel: '1 day',
-      curriculumHighlights: ['Module 1'],
+      status: 'OFFERED',
       displayOrder: 98,
     };
 
