@@ -6,7 +6,14 @@ import type { Course, CourseStatus } from "./types";
  * REVALIDATE_SECONDS so admin edits show up without a full rebuild.
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+// Server-only (not NEXT_PUBLIC_): this is only ever read inside Server
+// Components, never shipped to the browser. Keeping it un-prefixed means
+// it's read fresh from the environment at runtime instead of being
+// inlined into the build — required since the reachable backend address
+// differs per deployment (e.g. "http://backend:4000" inside Docker
+// Compose vs "http://localhost:4000" for local dev) and must not be
+// baked into the image at build time.
+const API_BASE_URL = process.env.BACKEND_URL ?? "http://localhost:4000";
 const REVALIDATE_SECONDS = 300;
 
 type RawInstructor = {

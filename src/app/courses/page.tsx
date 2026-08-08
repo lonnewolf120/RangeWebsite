@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     "Upcoming, regularly offered and previously held certificate courses at MIST Cyber Range (CACR).",
 };
 
+// See src/app/page.tsx for why this is dynamic rather than static.
+export const dynamic = "force-dynamic";
+
 /** "40 hours · Fridays · Starts: To be declared" facts line for a card. */
 function factsLine(course: Course): string {
   const facts: string[] = [];

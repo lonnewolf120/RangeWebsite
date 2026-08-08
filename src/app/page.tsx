@@ -14,6 +14,11 @@ import ThreatMapSection from "@/components/ThreatMapSection";
 import TiltCard from "@/components/TiltCard";
 import { getCoursesByStatus } from "@/lib/courses/api";
 
+// Renders per-request against the live backend (still cached via the
+// fetch-level revalidate in api.ts) rather than being prerendered at
+// build time — the backend isn't reachable during `docker build`.
+export const dynamic = "force-dynamic";
+
 /* ------------------------------------------------------------------ */
 /* Content data (placeholder entries marked — replace with real data)  */
 /* ------------------------------------------------------------------ */

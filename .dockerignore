@@ -1,0 +1,16 @@
+node_modules
+**/node_modules
+.next
+**/dist
+database/generated
+.git
+.worktrees
+.env
+.env.*.local
+.env.local
+*.log
+npm-debug.log*
+.DS_Store
+docs
+.superpowers
+.remember

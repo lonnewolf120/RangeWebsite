@@ -7,14 +7,14 @@ import CourseStatusBadge from "@/components/courses/CourseStatusBadge";
 import Reveal from "@/components/Reveal";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
-import { getCourseBySlug, getCourses } from "@/lib/courses/api";
+import { getCourseBySlug } from "@/lib/courses/api";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export async function generateStaticParams() {
-  const courses = await getCourses();
-  return courses.map((course) => ({ slug: course.slug }));
-}
+// See src/app/page.tsx for why this is dynamic rather than static —
+// course slugs are rendered on demand instead of being prebuilt from a
+// generateStaticParams() list, so no live backend is needed at build time.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
