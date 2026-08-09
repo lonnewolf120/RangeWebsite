@@ -59,5 +59,5 @@ COPY --from=build /app/database/generated ./database/generated
 COPY --from=build /app/backend/dist ./backend/dist
 
 WORKDIR /app/backend
-EXPOSE 4000
+EXPOSE 5412
 CMD ["node", "dist/server.js"]

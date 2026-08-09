@@ -45,14 +45,14 @@ services:
         condition: service_completed_successfully
     environment:
       NODE_ENV: production
-      PORT: 4000
+      PORT: 5412
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET}
       CORS_ORIGIN: ${CORS_ORIGIN}
     ports:
-      - "4000:4000"
+      - "5412:5412"
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:4000/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5412/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -67,13 +67,10 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: production
-      PORT: 3000
-      BACKEND_URL: http://backend:4000
+      PORT: 3412
+      BACKEND_URL: http://backend:5412
     ports:
-      # Host port 3020 avoids a port-3000 conflict with unrelated services
-      # on this shared dev host — change the left side to "3000:3000" (or
-      # whatever's free) for a standalone deployment.
-      - "3020:3000"
+      - "3412:3412"
 
 volumes:
   db_data:
